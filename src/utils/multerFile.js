@@ -1,9 +1,19 @@
 const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const AppError = require('./appError');
+
+const isVercel = process.env.VERCEL;
+const uploadDir = isVercel ? '/tmp/temp' : 'uploads/temp';
+
+// Ensure the upload directory exists
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/temp');
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     cb(null, `import-${Date.now()}-${file.originalname}`);
